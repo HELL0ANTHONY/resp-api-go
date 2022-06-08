@@ -11,7 +11,6 @@ import (
 func main() {
 	admin := admin.NewAdminPortal()
 	coastersHandlers := controllers.NewCoasterHandlers()
-	// la función route (ruta, controller)
 	http.HandleFunc("/coasters", coastersHandlers.Coasters)
 	http.HandleFunc("/coaster/", coastersHandlers.GetCoaster)
 	http.HandleFunc("/admin", admin.Handler)

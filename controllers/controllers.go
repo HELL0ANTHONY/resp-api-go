@@ -76,24 +76,6 @@ func (h *CoastersHandlers) GetRandomCoaster(w http.ResponseWriter, r *http.Reque
 	w.WriteHeader(http.StatusFound)
 }
 
-func (h *CoastersHandlers) Coasters(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case "GET":
-		h.Get(w, r)
-		return
-	case "POST":
-		h.Post(w, r)
-		return
-	default:
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		_, err := w.Write([]byte("method not allowed"))
-		if err != nil {
-			panic(err.Error())
-		}
-		return
-	}
-}
-
 func (h *CoastersHandlers) GetCoaster(w http.ResponseWriter, r *http.Request) {
 	parts := strings.Split(r.URL.String(), "/")
 	if len(parts) != 3 {
@@ -104,7 +86,6 @@ func (h *CoastersHandlers) GetCoaster(w http.ResponseWriter, r *http.Request) {
 		h.GetRandomCoaster(w, r)
 		return
 	}
-	// fmt.Println("lo que llega por la URL", parts[2])
 	h.Lock()
 	coaster, ok := h.store[parts[2]]
 	h.Unlock()
@@ -112,7 +93,6 @@ func (h *CoastersHandlers) GetCoaster(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-
 	jsonBytes, err := json.Marshal(coaster)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -154,4 +134,22 @@ func (h *CoastersHandlers) Post(w http.ResponseWriter, r *http.Request) {
 	h.Lock()
 	h.store[coaster.Id] = coaster
 	defer h.Unlock()
+}
+
+func (h *CoastersHandlers) Coasters(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		h.Get(w, r)
+		return
+	case "POST":
+		h.Post(w, r)
+		return
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		_, err := w.Write([]byte("method not allowed"))
+		if err != nil {
+			panic(err.Error())
+		}
+		return
+	}
 }
